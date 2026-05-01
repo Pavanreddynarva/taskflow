@@ -1,26 +1,36 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import './AuthPages.css';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./AuthPages.css";
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
+
     try {
-      await login(form.email, form.password);
-      navigate('/dashboard');
+      const res = await login(form.email, form.password);
+
+      // 🔥 Force navigation after login
+      if (res || localStorage.getItem("tm_token")) {
+        navigate("/dashboard");
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(
+        err.response?.data?.message || "Login failed. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -68,8 +78,18 @@ export default function LoginPage() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? <><span className="spinner" /> Signing in...</> : 'Sign in →'}
+          <button
+            type="submit"
+            className="btn btn-primary btn-full"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="spinner" /> Signing in...
+              </>
+            ) : (
+              "Sign in →"
+            )}
           </button>
         </form>
 
@@ -80,7 +100,9 @@ export default function LoginPage() {
         <div className="auth-demo">
           <div className="demo-label">Demo credentials</div>
           <div className="demo-creds">
-            <span>admin@demo.com / <code>password123</code></span>
+            <span>
+              admin@demo.com / <code>password123</code>
+            </span>
           </div>
         </div>
       </div>
