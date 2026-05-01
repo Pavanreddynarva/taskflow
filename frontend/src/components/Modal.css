@@ -1,0 +1,91 @@
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+/* Color picker */
+.color-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  transition: all 0.15s;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.color-dot:hover { transform: scale(1.1); }
+.color-dot.selected { border-color: white; transform: scale(1.15); box-shadow: 0 0 0 2px var(--accent); }
+
+/* Members select */
+.members-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  background: var(--bg-3);
+}
+
+.member-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+
+.member-option:hover {
+  background: var(--bg-4);
+}
+
+.member-option.selected {
+  background: var(--accent-dim);
+  border-color: rgba(124,106,247,0.2);
+}
+
+.member-email {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  flex: 1;
+}
+
+.member-check {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}

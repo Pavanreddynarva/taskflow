@@ -1,0 +1,137 @@
+.task-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: all var(--transition);
+  animation: slideUp 0.2s ease;
+}
+
+.task-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-card.overdue {
+  border-color: rgba(239,68,68,0.2);
+  background: rgba(239,68,68,0.03);
+}
+
+.task-card-left {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.status-select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: auto;
+  background-clip: padding-box;
+}
+
+.task-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.task-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.task-title.completed {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+
+.task-badges {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.task-desc {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.task-project-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--project-color);
+  background: color-mix(in srgb, var(--project-color) 12%, transparent);
+  padding: 3px 10px;
+  border-radius: 99px;
+  transition: opacity var(--transition);
+}
+
+.task-project-badge:hover { opacity: 0.8; }
+
+.task-assignee {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-2);
+}
+
+.task-deadline {
+  font-size: 0.78rem;
+  color: var(--text-3);
+}
+
+.task-deadline.overdue-text {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.task-delete-btn {
+  opacity: 0;
+  color: var(--text-3);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--transition);
+}
+
+.task-card:hover .task-delete-btn {
+  opacity: 1;
+}
+
+.task-delete-btn:hover {
+  color: var(--red);
+  background: var(--red-dim);
+}
