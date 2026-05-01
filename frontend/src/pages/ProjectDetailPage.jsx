@@ -1,43 +1,41 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { projectsAPI, tasksAPI, authAPI } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
-import TaskCard from '../components/TaskCard';
-import TaskModal from '../components/TaskModal';
-import './ProjectDetailPage.css';
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams, Link } from "react-router-dom";
+import { projectsAPI, tasksAPI, authAPI } from "../utils/api";
+import { useAuth } from "../context/AuthContext";
+import TaskCard from "../components/TaskCard";
+import TaskModal from "../components/TaskModal";
+import "./ProjectDetailPage.css";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { user, isAdmin } = useAuth();
+  const { user } = useAuth(); // ❌ removed isAdmin
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [projRes, tasksRes, usersRes] = await Promise.all([
+      const [projRes, tasksRes] = await Promise.all([
         projectsAPI.getOne(id),
         tasksAPI.getByProject(id),
-        authAPI.getUsers(),
       ]);
       setProject(projRes.data.project);
       setTasks(tasksRes.data.tasks);
-      setUsers(usersRes.data.users);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to load project.');
+      setError(err.response?.data?.message || "Failed to load project.");
     } finally {
       setLoading(false);
     }
   }, [id]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleCreateTask = async (data) => {
     await tasksAPI.create(id, data);
@@ -58,58 +56,81 @@ export default function ProjectDetailPage() {
   };
 
   const handleDeleteTask = async (taskId) => {
-    if (!window.confirm('Delete this task?')) return;
+    if (!window.confirm("Delete this task?")) return;
     await tasksAPI.delete(taskId);
     fetchData();
   };
 
   const filteredTasks = filter
-    ? tasks.filter(t => {
-        if (filter === 'overdue') return t.status !== 'completed' && t.deadline && new Date() > new Date(t.deadline);
+    ? tasks.filter((t) => {
+        if (filter === "overdue")
+          return (
+            t.status !== "completed" &&
+            t.deadline &&
+            new Date() > new Date(t.deadline)
+          );
         return t.status === filter;
       })
     : tasks;
 
   const stats = {
     total: tasks.length,
-    completed: tasks.filter(t => t.status === 'completed').length,
-    inProgress: tasks.filter(t => t.status === 'in-progress').length,
-    pending: tasks.filter(t => t.status === 'pending').length,
+    completed: tasks.filter((t) => t.status === "completed").length,
+    inProgress: tasks.filter((t) => t.status === "in-progress").length,
+    pending: tasks.filter((t) => t.status === "pending").length,
   };
-  const progress = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
-  if (loading) return (
-    <div style={{ textAlign: 'center', padding: '80px' }}>
-      <div className="spinner" style={{ width: 36, height: 36, margin: '0 auto' }} />
-    </div>
-  );
+  const progress =
+    stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
 
-  if (error) return (
-    <div>
-      <div className="alert alert-error">{error}</div>
-      <Link to="/projects" className="btn btn-secondary" style={{ marginTop: 16 }}>← Back</Link>
-    </div>
-  );
+  if (loading)
+    return (
+      <div style={{ textAlign: "center", padding: "80px" }}>
+        <div
+          className="spinner"
+          style={{ width: 36, height: 36, margin: "0 auto" }}
+        />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div>
+        <div className="alert alert-error">{error}</div>
+        <Link
+          to="/projects"
+          className="btn btn-secondary"
+          style={{ marginTop: 16 }}
+        >
+          ← Back
+        </Link>
+      </div>
+    );
 
   if (!project) return null;
-
-  const isOwner = project.owner?._id === user?._id || project.owner === user?._id;
 
   return (
     <div className="project-detail">
       <div className="project-detail-header">
         <div className="breadcrumb">
-          <Link to="/projects" className="breadcrumb-link">Projects</Link>
+          <Link to="/projects" className="breadcrumb-link">
+            Projects
+          </Link>
           <span className="breadcrumb-sep">›</span>
           <span>{project.name}</span>
         </div>
 
         <div className="project-detail-top">
           <div className="project-detail-title-row">
-            <div className="project-dot" style={{ background: project.color }} />
+            <div
+              className="project-dot"
+              style={{ background: project.color }}
+            />
             <h1 className="page-title">{project.name}</h1>
           </div>
-          {project.description && <p className="page-subtitle">{project.description}</p>}
+          {project.description && (
+            <p className="page-subtitle">{project.description}</p>
+          )}
         </div>
 
         <div className="project-detail-stats">
@@ -118,15 +139,30 @@ export default function ProjectDetailPage() {
             <span className="detail-stat-label">Total</span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-value" style={{ color: 'var(--amber)' }}>{stats.pending}</span>
+            <span
+              className="detail-stat-value"
+              style={{ color: "var(--amber)" }}
+            >
+              {stats.pending}
+            </span>
             <span className="detail-stat-label">Pending</span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-value" style={{ color: 'var(--blue)' }}>{stats.inProgress}</span>
+            <span
+              className="detail-stat-value"
+              style={{ color: "var(--blue)" }}
+            >
+              {stats.inProgress}
+            </span>
             <span className="detail-stat-label">In Progress</span>
           </div>
           <div className="detail-stat">
-            <span className="detail-stat-value" style={{ color: 'var(--green)' }}>{stats.completed}</span>
+            <span
+              className="detail-stat-value"
+              style={{ color: "var(--green)" }}
+            >
+              {stats.completed}
+            </span>
             <span className="detail-stat-label">Done</span>
           </div>
         </div>
@@ -134,31 +170,15 @@ export default function ProjectDetailPage() {
         <div className="project-progress-section">
           <div className="progress-header">
             <span>Progress</span>
-            <span style={{ color: project.color, fontWeight: 700 }}>{progress}%</span>
+            <span style={{ color: project.color, fontWeight: 700 }}>
+              {progress}%
+            </span>
           </div>
           <div className="progress-bar">
-            <div className="progress-bar-fill" style={{ width: `${progress}%`, background: project.color }} />
-          </div>
-        </div>
-
-        <div className="project-members-section">
-          <div className="members-label">Team</div>
-          <div className="members-list">
-            <div className="member-chip">
-              <div className="avatar avatar-sm">
-                {project.owner?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-              </div>
-              <span>{project.owner?.name}</span>
-              <span className="member-role-tag">Owner</span>
-            </div>
-            {project.members?.map(m => (
-              <div key={m._id} className="member-chip">
-                <div className="avatar avatar-sm">
-                  {m.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                </div>
-                <span>{m.name}</span>
-              </div>
-            ))}
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${progress}%`, background: project.color }}
+            />
           </div>
         </div>
       </div>
@@ -166,19 +186,34 @@ export default function ProjectDetailPage() {
       <div className="tasks-section">
         <div className="section-header">
           <h2 className="section-title">Tasks</h2>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 10,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <div className="filter-tabs">
-              {['', 'pending', 'in-progress', 'completed', 'overdue'].map(f => (
-                <button
-                  key={f}
-                  className={`filter-tab ${filter === f ? 'active' : ''}`}
-                  onClick={() => setFilter(f)}
-                >
-                  {f ? f.replace('-', ' ') : 'All'}
-                </button>
-              ))}
+              {["", "pending", "in-progress", "completed", "overdue"].map(
+                (f) => (
+                  <button
+                    key={f}
+                    className={`filter-tab ${filter === f ? "active" : ""}`}
+                    onClick={() => setFilter(f)}
+                  >
+                    {f ? f.replace("-", " ") : "All"}
+                  </button>
+                ),
+              )}
             </div>
-            <button className="btn btn-primary btn-sm" onClick={() => { setEditingTask(null); setTaskModalOpen(true); }}>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => {
+                setEditingTask(null);
+                setTaskModalOpen(true);
+              }}
+            >
               + Add Task
             </button>
           </div>
@@ -187,15 +222,19 @@ export default function ProjectDetailPage() {
         {filteredTasks.length === 0 ? (
           <div className="empty-state">
             <div className="icon">◫</div>
-            <h3>No tasks {filter ? `with status "${filter}"` : 'yet'}</h3>
+            <h3>No tasks {filter ? `with status "${filter}"` : "yet"}</h3>
             <p>Add your first task to get started.</p>
-            <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => setTaskModalOpen(true)}>
+            <button
+              className="btn btn-primary"
+              style={{ marginTop: 16 }}
+              onClick={() => setTaskModalOpen(true)}
+            >
               + Add Task
             </button>
           </div>
         ) : (
           <div className="tasks-list">
-            {filteredTasks.map(task => (
+            {filteredTasks.map((task) => (
               <TaskCard
                 key={task._id}
                 task={task}
@@ -210,8 +249,15 @@ export default function ProjectDetailPage() {
       {taskModalOpen && (
         <TaskModal
           users={[project.owner, ...(project.members || [])]}
-          onSubmit={editingTask ? (data) => handleUpdateTask(editingTask._id, data) : handleCreateTask}
-          onClose={() => { setTaskModalOpen(false); setEditingTask(null); }}
+          onSubmit={
+            editingTask
+              ? (data) => handleUpdateTask(editingTask._id, data)
+              : handleCreateTask
+          }
+          onClose={() => {
+            setTaskModalOpen(false);
+            setEditingTask(null);
+          }}
           initialData={editingTask}
         />
       )}
