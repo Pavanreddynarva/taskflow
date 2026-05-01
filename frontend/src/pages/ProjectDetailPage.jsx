@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
-import { projectsAPI, tasksAPI, authAPI } from "../utils/api";
-import { useAuth } from "../context/AuthContext";
+import { projectsAPI, tasksAPI } from "../utils/api";
 import TaskCard from "../components/TaskCard";
 import TaskModal from "../components/TaskModal";
 import "./ProjectDetailPage.css";
 
 export default function ProjectDetailPage() {
   const { id } = useParams();
-  const { user } = useAuth(); // ❌ removed isAdmin
+
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -186,64 +185,24 @@ export default function ProjectDetailPage() {
       <div className="tasks-section">
         <div className="section-header">
           <h2 className="section-title">Tasks</h2>
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => setTaskModalOpen(true)}
           >
-            <div className="filter-tabs">
-              {["", "pending", "in-progress", "completed", "overdue"].map(
-                (f) => (
-                  <button
-                    key={f}
-                    className={`filter-tab ${filter === f ? "active" : ""}`}
-                    onClick={() => setFilter(f)}
-                  >
-                    {f ? f.replace("-", " ") : "All"}
-                  </button>
-                ),
-              )}
-            </div>
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => {
-                setEditingTask(null);
-                setTaskModalOpen(true);
-              }}
-            >
-              + Add Task
-            </button>
-          </div>
+            + Add Task
+          </button>
         </div>
 
-        {filteredTasks.length === 0 ? (
-          <div className="empty-state">
-            <div className="icon">◫</div>
-            <h3>No tasks {filter ? `with status "${filter}"` : "yet"}</h3>
-            <p>Add your first task to get started.</p>
-            <button
-              className="btn btn-primary"
-              style={{ marginTop: 16 }}
-              onClick={() => setTaskModalOpen(true)}
-            >
-              + Add Task
-            </button>
-          </div>
-        ) : (
-          <div className="tasks-list">
-            {filteredTasks.map((task) => (
-              <TaskCard
-                key={task._id}
-                task={task}
-                onStatusChange={handleStatusChange}
-                onDelete={handleDeleteTask}
-              />
-            ))}
-          </div>
-        )}
+        <div className="tasks-list">
+          {filteredTasks.map((task) => (
+            <TaskCard
+              key={task._id}
+              task={task}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDeleteTask}
+            />
+          ))}
+        </div>
       </div>
 
       {taskModalOpen && (
