@@ -14,7 +14,7 @@ export default function ProjectDetailPage() {
   const [error, setError] = useState("");
   const [taskModalOpen, setTaskModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
-  const [filter, setFilter] = useState("");
+  const [filter] = useState("");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
